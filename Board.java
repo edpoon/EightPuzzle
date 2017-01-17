@@ -202,21 +202,46 @@ public class Board extends JPanel implements ActionListener {
      */
 
     public boolean solved() {
+        return (hamming() == 0);
+    }
+
+    /**
+     * Returns the number of blocks out of place
+     */
+    public int hamming() {
         // The number of cells that are in the correct position
         int count = 0;
         // Iterates through 0 to NUMBER_OF_ROWS * NUMBER_OF_COLUMNS
-        int iterator = 0;
+        int iterator = 1;
 
-        // Checks if each cell is in the approriate position
-        for (int row = 0; row < NUMBER_OF_ROWS; row++) {
-            for (int column = 0; column < NUMBER_OF_COLUMNS; column++) {
+        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+            for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
+                if (board[i][j].getType() != iterator ) {
+                    count++;
+                }
                 iterator++;
-                if (board[row][column].getType() == iterator) count++;
             }
         }
+        return (count - 1);
+    }
 
-        // Solved if all the cells are in the right position
-        return (count == NUMBER_OF_ROWS * NUMBER_OF_COLUMNS - 1);
+    /**
+     * Returns sum of Manhattan distances between blocks and goals
+     */
+    public int manhattan() {
+        int manhattan = 0;
+        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+            for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
+                int type = board[i][j].getType();
+                if (type != 0) {
+                    int row = (type - 1) / 3;
+                    int column = (type - 1) % 3;
+                    System.out.println(Math.abs(i - row) + Math.abs(j - column));
+                    manhattan += Math.abs(i - row) + Math.abs(j - column);
+                }
+            }
+        }
+        return manhattan;
     }
 
     /**
