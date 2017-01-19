@@ -202,46 +202,7 @@ public class Board extends JPanel implements ActionListener {
      */
 
     public boolean solved() {
-        return (hamming() == 0);
-    }
-
-    /**
-     * Returns the number of blocks out of place
-     */
-    public int hamming() {
-        // The number of cells that are in the correct position
-        int count = 0;
-        // Iterates through 0 to NUMBER_OF_ROWS * NUMBER_OF_COLUMNS
-        int iterator = 1;
-
-        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
-            for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
-                if (board[i][j].getType() != iterator ) {
-                    count++;
-                }
-                iterator++;
-            }
-        }
-        return (count - 1);
-    }
-
-    /**
-     * Returns sum of Manhattan distances between blocks and goals
-     */
-    public int manhattan() {
-        int manhattan = 0;
-        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
-            for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
-                int type = board[i][j].getType();
-                if (type != 0) {
-                    int row = (type - 1) / 3;
-                    int column = (type - 1) % 3;
-                    System.out.println(Math.abs(i - row) + Math.abs(j - column));
-                    manhattan += Math.abs(i - row) + Math.abs(j - column);
-                }
-            }
-        }
-        return manhattan;
+        return (permutation.hamming() == 0);
     }
 
     /**

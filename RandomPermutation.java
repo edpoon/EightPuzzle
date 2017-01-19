@@ -1,6 +1,14 @@
 import java.util.Random;
+import java.util.PriorityQueue;
 
-public class RandomPermutation {
+public class RandomPermutation implements Cloneable, Comparable<RandomPermutation>{
+    private static final int UP = 0;
+
+    private static final int DOWN = 1;
+
+    private static final int LEFT = 2;
+
+    private static final int RIGHT = 3;
 
     /**
      * A two-dimensional matrix that represents the board
@@ -24,8 +32,8 @@ public class RandomPermutation {
      * Constructs the RandomPermutation given a row and column
      * The size of the matrix is constructed using the given dimensions
      * The matrix is automatically in the winning position
-     * @param row
-     * @param column
+     * @param row The number of rows for the board
+     * @param column The number of columns for the board
      */
 
     public RandomPermutation(int row, int column) {
@@ -53,11 +61,14 @@ public class RandomPermutation {
      */
 
     public String toString() {
-        String representation = "";
+        String string = "";
         for (int i = 0; i < board.length; i++) {
-            representation += board[i];
+            for(int j = 0; j < board[0].length; j++) {
+                string += "[" + board[i][j] + "]";
+            }
+            string += "\n";
         }
-        return representation;
+        return string;
     }
 
     /**
@@ -76,17 +87,17 @@ public class RandomPermutation {
             direction = rng.nextInt(4);
 
             // If possible to move empty cell up, do it
-            if (direction == 0 && zeroRow - 1 >= 0) {
-                move(direction);
-            } else if (direction == 1 && zeroRow + 1 < board.length) {
+            if (direction == UP && zeroRow - 1 >= 0) {
+                move(UP);
+            } else if (direction == DOWN && zeroRow + 1 < board.length) {
                 // If possible to move empty cell down, do it
-                move(direction);
-            } else if (direction == 2 && zeroColumn - 1 >= 0) {
+                move(DOWN);
+            } else if (direction == LEFT && zeroColumn - 1 >= 0) {
                 // If possible to move empty cell left, do it
-                move(direction);
-            } else if (direction == 3 && zeroColumn + 1 < board[0].length) {
+                move(LEFT);
+            } else if (direction == RIGHT && zeroColumn + 1 < board[0].length) {
                 // If possible to move empty cell right, do it
-                move(direction);
+                move(RIGHT);
             } else {
                 // The direction generated is not possible
                 i--;
@@ -95,41 +106,51 @@ public class RandomPermutation {
     }
 
     /**
-     * Moves the empty to one of four positions which is determined randomnly
+     * Swaps two cells on the board
+     * @param x0 Row coordinate for the first tile
+     * @param y0 Column coordinate for the first tile
+     * @param x1 Row coordinate for the second tile
+     * @param y1 Column coordinate for the second tile
+     */
+    public void swap(int x0, int y0, int x1, int y1) {
+        int value = board[x0][y0];
+        board[x0][y0] = board[x1][y1];
+        board[x1][y1] = value;
+    }
+
+    /**
+     * Moves the empty to one of four positions which is determined randomly
      * in the shuffle method
-     * @param choice Represents a randomly generated move
+     * @param direction Represents a randomly generated move
      */
 
-    public void move(int choice) {
-        // Move empty cell up
-        if (choice == 0) {
-            board[zeroRow][zeroColumn] = board[zeroRow - 1][zeroColumn];
+    public void move(int direction) {
+        switch (direction) {
+        case UP:
+            swap(zeroRow, zeroColumn, zeroRow - 1, zeroColumn);
             zeroRow--;
-        }
-        // Move empty cell down
-        else if (choice == 1) {
-            board[zeroRow][zeroColumn] = board[zeroRow + 1][zeroColumn];
+            break;
+        case DOWN:
+            swap(zeroRow, zeroColumn, zeroRow + 1, zeroColumn);
             zeroRow++;
-        }
-        // Move empty cell left
-        else if (choice == 2) {
-            board[zeroRow][zeroColumn] = board[zeroRow][zeroColumn - 1];
+            break;
+        case LEFT:
+            swap(zeroRow, zeroColumn, zeroRow, zeroColumn - 1);
             zeroColumn--;
-        }
-        // Move empty cell right
-        else if (choice == 3) {
-            board[zeroRow][zeroColumn] = board[zeroRow][zeroColumn + 1];
+            break;
+        case RIGHT:
+            swap(zeroRow, zeroColumn, zeroRow, zeroColumn + 1);
             zeroColumn++;
+            break;
         }
-        // Update the position of the empty cell
         updateZero(zeroRow, zeroColumn);
     }
 
     /**
      * Returns the number of the matrix at a given row and column
-     * @param row
-     * @param column
-     * @return
+     * @param row The row coordinate for the tile
+     * @param column The column coordinate for the tile
+     * @return Returns the value of the tile
      */
 
     public int getType(int row, int column) {
@@ -154,10 +175,9 @@ public class RandomPermutation {
 
     /**
      * Given a row and column, updates the position of the zero
-     * @param row
-     * @param column
+     * @param row The row coordinate for the tile to be set to zero
+     * @param column The column coordinate for the tile to be set to zero
      */
-
     public void updateZero(int row, int column) {
         zeroRow = row;
         zeroColumn = column;
@@ -174,5 +194,107 @@ public class RandomPermutation {
 
     public void update(int row, int column, int type) {
         board[row][column] = type;
+    }
+
+    /**
+     * Returns the number of blocks out of place.
+     * Note that we do not count the blank tile when computing the Hamming priority.
+     */
+    public int hamming() {
+        int hamming = 0;
+        int count = 1;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] != count) {
+                    hamming++;
+                }
+                count++;
+            }
+        }
+        return hamming - 1;
+    }
+
+    /**
+     * Returns sum of Manhattan distances between blocks and goals.
+     * Note that we do not count the blank tile when computing the Manhattan priority.
+     */
+    public int manhattan() {
+        String string = "";
+        int manhattan = 0;
+         for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] != 0) {
+                    // Calculate the goal position of this tile
+                    int row = (board[i][j] - 1) / 3;
+                    int column = (board[i][j] - 1) % 3;
+                    manhattan += Math.abs(i - row) + Math.abs(j - column);
+                    int diff = Math.abs(i - row) + Math.abs(j - column);
+                    string += board[i][j] + ": " + diff + "\n";
+                }
+            }
+        }
+         // return string;
+         return manhattan;
+    }
+
+    /**
+     *
+     * @return A copy of this object
+     */
+    protected RandomPermutation clone() {
+        RandomPermutation clone = new RandomPermutation(board.length, board[0].length);
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                clone.board[i][j] = board[i][j];
+            }
+        }
+        clone.zeroRow = getZeroRow();
+        clone.zeroColumn = getZeroColumn();
+        return clone;
+    }
+
+    /**
+     * * Compares this object with the specified object for order.
+     * @param other The other object to be compared
+     * @return A negative integer, zero, or a positive integer if this object is less than, equal to, or greater than the specified object
+     */
+    public int compareTo(RandomPermutation other) {
+        return Integer.compare(this.hamming(), other.hamming());
+    }
+
+    /**
+     * @return An iterable of all neighbouring board position
+     */
+    public Iterable<RandomPermutation> neighbours() {
+        PriorityQueue<RandomPermutation> neighbours = new PriorityQueue<>();
+        RandomPermutation neighbour;
+
+        if (zeroRow - 1 >= 0) {
+            // up
+            neighbour = this.clone();
+            neighbour.swap(zeroRow, zeroColumn, zeroRow - 1, zeroColumn);
+            neighbour.zeroRow--;
+            neighbours.add(neighbour);
+        } if (zeroRow + 1 < board.length) {
+            // down
+            neighbour = this.clone();
+            neighbour.swap(zeroRow, zeroColumn, zeroRow + 1, zeroColumn);
+            neighbour.zeroRow++;
+            neighbours.add(neighbour);
+        } if (zeroColumn - 1 >= 0) {
+            // left
+            neighbour = this.clone();
+            neighbour.swap(zeroRow, zeroColumn, zeroRow, zeroColumn - 1);
+            neighbour.zeroColumn--;
+            neighbours.add(neighbour);
+        } if (zeroColumn + 1 < board[0].length) {
+            // right
+            neighbour = this.clone();
+            neighbour.swap(zeroRow, zeroColumn, zeroRow, zeroColumn + 1);
+            neighbour.zeroColumn++;
+            neighbours.add(neighbour);
+        }
+
+        return neighbours;
     }
 }
