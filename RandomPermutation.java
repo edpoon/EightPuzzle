@@ -2,6 +2,7 @@ import java.util.Random;
 import java.util.PriorityQueue;
 
 public class RandomPermutation implements Cloneable, Comparable<RandomPermutation>{
+
     private static final int UP = 0;
 
     private static final int DOWN = 1;
@@ -241,6 +242,7 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      *
      * @return A copy of this object
      */
+    @Override
     protected RandomPermutation clone() {
         RandomPermutation clone = new RandomPermutation(board.length, board[0].length);
         for (int i = 0; i < board.length; i++) {
@@ -258,6 +260,7 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * @param other The other object to be compared
      * @return A negative integer, zero, or a positive integer if this object is less than, equal to, or greater than the specified object
      */
+    @Override
     public int compareTo(RandomPermutation other) {
         return Integer.compare(this.hamming(), other.hamming());
     }
@@ -296,5 +299,18 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
         }
 
         return neighbours;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        RandomPermutation other = (RandomPermutation) o;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] != other.board[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

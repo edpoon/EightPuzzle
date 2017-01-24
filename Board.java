@@ -23,13 +23,13 @@ public class Board extends JPanel implements ActionListener {
      * Defines the total number of rows.
      */
 
-    public static final int NUMBER_OF_ROWS = 3;
+    private static final int NUMBER_OF_ROWS = 3;
 
     /**
      * Defines the total number of columns.
      */
 
-    public static final int NUMBER_OF_COLUMNS = 3;
+    private static final int NUMBER_OF_COLUMNS = 3;
 
     /**
      * A two dimensional array to keep references to all the cells of the board.
@@ -82,7 +82,7 @@ public class Board extends JPanel implements ActionListener {
         permutation.shuffle();
 
         zeroRow = permutation.getZeroRow();
-        zeroColumn = permutation.getZeroRow();
+        zeroColumn = permutation.getZeroColumn();
 
         // Setup higher logic of game
         board = new Cell[NUMBER_OF_ROWS][NUMBER_OF_COLUMNS];
@@ -236,5 +236,9 @@ public class Board extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "You won the game in " + moves + " moves!", "Winner!", JOptionPane.INFORMATION_MESSAGE);
             init();
         }
+    }
+
+    public RandomPermutation getPermutation() {
+        return permutation;
     }
 }
