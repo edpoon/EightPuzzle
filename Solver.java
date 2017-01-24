@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Stack;
 import java.util.PriorityQueue;
 
 public class Solver {
@@ -28,6 +27,7 @@ public class Solver {
             this.previous = previous;
         }
 
+        @Override
         public int compareTo(State state) {
             return Integer.compare(this.position.manhattan() + this.moves, state.position.manhattan() + state.moves);
         }
@@ -36,7 +36,7 @@ public class Solver {
     /**
      * A list of board positions corresponding to a solution to an instance of the game
      */
-    private Stack<RandomPermutation> solution;
+    private LinkedList<RandomPermutation> solution;
 
     /**
      * Find a solution to the initial board
@@ -54,12 +54,14 @@ public class Solver {
             }
         }
 
-        solution = new Stack<>();
+        solution = new LinkedList<>();
         State state = queue.remove();
         while(state.previous != null) {
-            solution.push(state.position);
+            solution.add(state.position);
             state = state.previous;
         }
+
+        // Collections.reverse(solution);
     }
 
     /**

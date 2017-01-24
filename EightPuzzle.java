@@ -44,9 +44,15 @@ public class EightPuzzle extends JFrame implements ActionListener {
         button.setFocusPainted(false);
         button.addActionListener(this);
 
+        // solve button
+        JButton solve = new JButton("Solve");
+        solve.setFocusPainted(false);
+        solve.addActionListener(this);
+
         JPanel control = new JPanel();
         control.setBackground(Color.WHITE);
         control.add(button);
+        control.add(solve);
         add(control, BorderLayout.SOUTH);
 
         pack();
@@ -65,7 +71,33 @@ public class EightPuzzle extends JFrame implements ActionListener {
      */
 
     public void actionPerformed(ActionEvent e) {
-        if (board.allowsClicks()) {
+        if (e.getActionCommand().equals("Solve")) {
+            board.setAllowsClicks(false);
+
+            // benchmarks
+            long start, stop;
+            start = System.currentTimeMillis();
+
+            Solver solver = new Solver(board.getPermutation());
+
+            for (RandomPermutation position : solver.solution()) {
+                System.out.println(position);
+            }
+
+            stop = System.currentTimeMillis();
+            System.out.printf("Solved in %d moves with runtime: %d ms.", solver.moves(), stop - start);
+
+            board.setAllowsClicks(true);
+
+            /*
+            for (RandomPermutation position : solver.solution()) {
+                int row = position.getZeroRow();
+                int col = position.getZeroColumn();
+                board.board[row][col].doClick();
+            }
+            */
+
+        } else if (e.getActionCommand().equals("Start New Game") && board.allowsClicks()) {
             board.setAllowsClicks(false);
             board.init();
             board.setAllowsClicks(true);
