@@ -97,7 +97,7 @@ public class EightPuzzle extends JFrame implements ActionListener {
             }
             */
 
-        } else if (e.getActionCommand().equals("Start New Game") && board.allowsClicks()) {
+        } else if (e.getActionCommand().equals("Start new game") && board.allowsClicks()) {
             board.setAllowsClicks(false);
             board.init();
             board.setAllowsClicks(true);
