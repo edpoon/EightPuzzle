@@ -46,11 +46,23 @@ public class Solver {
         PriorityQueue<State> queue = new PriorityQueue<>();
         queue.add(initial);
 
-        while((queue.peek().position.hamming() != 0)) {
+        // enqueue neighbouring positions if initial state isn't goal state
+        if (queue.peek().position.hamming() != 0) {
             State state = queue.remove();
             for (RandomPermutation neighbour : state.position.neighbours()) {
                 State neighbouringState = new State(neighbour, state.moves + 1, state);
                 queue.add(neighbouringState);
+            }
+        }
+
+        while((queue.peek().position.hamming() != 0)) {
+            State state = queue.remove();
+            for (RandomPermutation neighbour : state.position.neighbours()) {
+                // don't add a state if the neighbouring position is the same as the previous state position
+                if (!neighbour.equals(state.previous.position)) {
+                    State neighbouringState = new State(neighbour, state.moves + 1, state);
+                    queue.add(neighbouringState);
+                }
             }
         }
 
@@ -60,8 +72,6 @@ public class Solver {
             solution.add(state.position);
             state = state.previous;
         }
-
-        // Collections.reverse(solution);
     }
 
     /**
@@ -72,7 +82,7 @@ public class Solver {
     }
 
     /**
-     * Returns an Iterable of RandomPermutation positions in solution
+     * @return An iterable of RandomPermutation positions in solution
      */
     public Iterable<RandomPermutation> solution() {
         return solution;
