@@ -1,4 +1,5 @@
-import java.util.LinkedList;
+// import java.util.LinkedList;
+import java.util.Stack;
 import java.util.PriorityQueue;
 
 public class Solver {
@@ -36,7 +37,7 @@ public class Solver {
     /**
      * A list of board positions corresponding to a solution to an instance of the game
      */
-    private LinkedList<RandomPermutation> solution;
+    private Stack<RandomPermutation> solution;
 
     /**
      * Find a solution to the initial board
@@ -66,10 +67,10 @@ public class Solver {
             }
         }
 
-        solution = new LinkedList<>();
+        solution = new Stack<>();
         State state = queue.remove();
         while(state.previous != null) {
-            solution.add(state.position);
+            solution.push(state.position);
             state = state.previous;
         }
     }
@@ -84,7 +85,8 @@ public class Solver {
     /**
      * @return An iterable of RandomPermutation positions in solution
      */
-    public Iterable<RandomPermutation> solution() {
+
+    public Stack<RandomPermutation> solution() {
         return solution;
     }
 }

@@ -80,23 +80,30 @@ public class EightPuzzle extends JFrame implements ActionListener {
 
             Solver solver = new Solver(board.getPermutation());
 
-            for (RandomPermutation position : solver.solution()) {
-                System.out.println(position);
-            }
-
             stop = System.currentTimeMillis();
             System.out.printf("Solved in %d moves with runtime: %d ms.", solver.moves(), stop - start);
 
-            board.setAllowsClicks(true);
-
-            /*
-            for (RandomPermutation position : solver.solution()) {
-                int row = position.getZeroRow();
-                int col = position.getZeroColumn();
-                board.board[row][col].doClick();
-            }
-            */
-
+            // half a second
+            Timer timer = new Timer(500, null);
+            timer.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (!solver.solution().empty()) {
+                        RandomPermutation position = solver.solution().pop();
+                        int row = position.getZeroRow();
+                        int col = position.getZeroColumn();
+                        // don't allow the user to click when the solver is working
+                        board.setAllowsClicks(true);
+                        board.board[row][col].doClick();
+                        board.setAllowsClicks(false);
+                    } else {
+                        timer.stop();
+                        board.setAllowsClicks(true);
+                    }
+                }
+            });
+            timer.start();
+            board.setAllowsClicks(false);
         } else if (e.getActionCommand().equals("Start new game") && board.allowsClicks()) {
             board.setAllowsClicks(false);
             board.init();

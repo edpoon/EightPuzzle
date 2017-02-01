@@ -35,7 +35,8 @@ public class Board extends JPanel implements ActionListener {
      * A two dimensional array to keep references to all the cells of the board.
      */
 
-    private Cell[][] board;
+    // change visiblility modifier later
+    public Cell[][] board;
 
     /**
      * Used by the logic to avoid processing multiple clicks.
