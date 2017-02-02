@@ -14,64 +14,35 @@ import java.lang.Math;
  * @author Marcel Turcotte, University of Ottawa
  *
  */
-
 public class Board extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Defines the total number of rows.
-     */
-
+    /** Defines the total number of rows. */
     private static final int NUMBER_OF_ROWS = 3;
 
-    /**
-     * Defines the total number of columns.
-     */
-
+    /** Defines the total number of columns. */
     private static final int NUMBER_OF_COLUMNS = 3;
 
-    /**
-     * A two dimensional array to keep references to all the cells of the board.
-     */
+    /** A two dimensional array to keep references to all the cells of the board. */
+    private Cell[][] board;
 
-    // change visiblility modifier later
-    public Cell[][] board;
-
-    /**
-     * Used by the logic to avoid processing multiple clicks.
-     */
-
+    /** Used by the logic to avoid processing multiple clicks. */
     private boolean allowsClicks = false;
 
-    /**
-     * An object of RandomPermutation that contains a matrix that represents the board.
-     */
-
+    /** An object of RandomPermutation that contains a matrix that represents the board. */
     private RandomPermutation permutation;
 
-    /**
-     * A number that represents which row the empty cell is contained in.
-     */
-
+    /** A number that represents which row the empty cell is contained in. */
     private int zeroRow;
 
-    /**
-     * A number that represents which column the empty the empty cell is contained in.
-     */
-
+    /** A number that represents which column the empty the empty cell is contained in. */
     private int zeroColumn;
 
-    /**
-     * A number that represents the number of moves the user has taken.
-     */
-
+    /** A number that represents the number of moves the user has taken. */
     private int moves;
 
-    /**
-     * Constructor used to create the cell
-     */
-
+    /** Constructor used to setup the board. */
     public Board() {
         // Set up the GUI
         setBackground(Color.WHITE);
@@ -85,7 +56,7 @@ public class Board extends JPanel implements ActionListener {
         zeroRow = permutation.getZeroRow();
         zeroColumn = permutation.getZeroColumn();
 
-        // Setup higher logic of game
+        // Setup upper logic of game
         board = new Cell[NUMBER_OF_ROWS][NUMBER_OF_COLUMNS];
 
         for (int row = 0; row < NUMBER_OF_ROWS; row++) {
@@ -97,10 +68,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    /**
-     * Re-initializes all the cells of the grid and resets the board.
-     */
-
+    /** Re-initializes all the cells of the grid and resets the board. */
     public void init() {
         permutation.shuffle();
         for (int row = 0; row < NUMBER_OF_ROWS; row++) {
@@ -116,30 +84,21 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Returns <b>true</b> if clicks are allowed, and false otherwise.
-     *
      * @return true if clicks are allowed
      */
-
     public boolean allowsClicks() {
         return allowsClicks;
     }
 
     /**
      * A setter for the attribute <b>allowsClick</b>.
-     *
-     * @param allowClicks
-     *            the allowClicks to set
+     * @param allowClicks the allowClicks to set
      */
-
     public void setAllowsClicks(boolean allowClicks) {
         this.allowsClicks = allowClicks;
     }
 
-    /**
-     * Sets the attribute <b>selected</b> to <b>false</b> for all the cells of
-     * the grid.
-     */
-
+    /** Sets the attribute <b>selected</b> to <b>false</b> for all the cells of the grid. */
     public void deselectAllCells() {
         for (int row = 0; row < NUMBER_OF_ROWS; row++) {
             for (int column = 0; column < NUMBER_OF_COLUMNS; column++) {
@@ -151,14 +110,10 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Returns <b>true</b> if the cell found at <b>row</b>, <b>column</b> is
      * beside the empty cell and <b>false</b> otherwise.
-     *
-     * @param row
-     *            the specified row
-     * @param column
-     *            the specified column
+     * @param row the specified row
+     * @param column the specified column
      * @return true if the specified cell is beside the empty cell.
      */
-
     public boolean hasNeighbourZero(int row, int column) {
         boolean horizontal, vertical;
         // Check if the zero cell is left or right of the current cell
@@ -172,14 +127,10 @@ public class Board extends JPanel implements ActionListener {
     /**
      * This method is called after a call to <b>hasNeighbourZero</b> in
      * swap the empty cell with the clicked cell that is adjacent to it
-     *
-     * @param row
-     *            the specified row
-     * @param column
-     *            the specified column
+     * @param row the specified row
+     * @param column the specified column
      */
-
-    public void swap(int row, int column) {
+    private void swap(int row, int column) {
         board[row][column].setSelected(true);
 
         if (hasNeighbourZero(row, column)) {
@@ -198,10 +149,8 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Returns <b>true</b> if and only if all the cells are <b>Empty</b>.
-     *
      * @return <b>true</b> if and only if all the cells are <b>Empty</b>
      */
-
     public boolean solved() {
         return (permutation.hamming() == 0);
     }
@@ -217,7 +166,6 @@ public class Board extends JPanel implements ActionListener {
      *
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
-
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof Cell) {
             Cell src = (Cell) e.getSource();
@@ -234,12 +182,23 @@ public class Board extends JPanel implements ActionListener {
         }
 
         if (solved()) {
-            JOptionPane.showMessageDialog(this, "You won the game in " + moves + " moves!", "Winner!", JOptionPane.INFORMATION_MESSAGE);
+            String message = "You won the game in " + moves + " moves!";
+            JOptionPane.showMessageDialog(this, message, "Winner!", JOptionPane.INFORMATION_MESSAGE);
             init();
         }
     }
 
+    /** {@link Board#permutation} */
     public RandomPermutation getPermutation() {
         return permutation;
+    }
+
+    /**
+     * Used by the AI solver to click on the cell in position (row, col).
+     * @param row the row of the cell to be clicked
+     * @param col the column of the cell to be clicked
+     */
+    public void clickCell(int row, int col) {
+        board[row][col].doClick();
     }
 }

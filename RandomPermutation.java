@@ -2,31 +2,23 @@ import java.util.Random;
 import java.util.PriorityQueue;
 
 public class RandomPermutation implements Cloneable, Comparable<RandomPermutation>{
-
-    private static final int UP = 0;
-
-    private static final int DOWN = 1;
-
-    private static final int LEFT = 2;
-
-    private static final int RIGHT = 3;
-
     /**
-     * A two-dimensional matrix that represents the board
+     * Acts as an enum for code readability
      */
+    private class Direction {
+        public static final int UP = 0;
+        public static final int DOWN = 1;
+        public static final int LEFT = 2;
+        public static final int RIGHT = 3;
+    }
 
+    /** A two-dimensional matrix that represents the board. */
     private int[][] board;
 
-    /**
-     * An integer that represents the row where the zero is located
-     */
-
+    /** An integer that represents the row where the zero is located. */
     private int zeroRow;
 
-    /**
-     * An integer that represents the column where the zero is located
-     */
-
+    /** An integer that represents the column where the zero is located. */
     private int zeroColumn;
 
     /**
@@ -36,7 +28,6 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * @param row The number of rows for the board
      * @param column The number of columns for the board
      */
-
     public RandomPermutation(int row, int column) {
         board = new int[row][column];
         int count = 1;
@@ -57,10 +48,8 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
 
     /**
      * Returns a <code>String</code> representation of this <code>Board</code>
-     *
      * @return the String representation of this Board
      */
-
     public String toString() {
         String string = "";
         for (int i = 0; i < board.length; i++) {
@@ -77,7 +66,6 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * and checking if it the new proposed position
      * is within the indexes of the array
      */
-
     public void shuffle() {
         // The direction to move the empty cell
         int direction;
@@ -88,19 +76,19 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
             direction = rng.nextInt(4);
 
             // If possible to move empty cell up, do it
-            if (direction == UP && zeroRow - 1 >= 0) {
-                move(UP);
-            } else if (direction == DOWN && zeroRow + 1 < board.length) {
+            if (direction == Direction.UP && zeroRow != 0) {
+                move(Direction.UP);
+            } else if (direction == Direction.DOWN && zeroRow < board.length - 1) {
                 // If possible to move empty cell down, do it
-                move(DOWN);
-            } else if (direction == LEFT && zeroColumn - 1 >= 0) {
+                move(Direction.DOWN);
+            } else if (direction == Direction.LEFT && zeroColumn != 0) {
                 // If possible to move empty cell left, do it
-                move(LEFT);
-            } else if (direction == RIGHT && zeroColumn + 1 < board[0].length) {
+                move(Direction.LEFT);
+            } else if (direction == Direction.RIGHT && zeroColumn < board[0].length - 1) {
                 // If possible to move empty cell right, do it
-                move(RIGHT);
+                move(Direction.RIGHT);
             } else {
-                // The direction generated is not possible
+                // The direction generated is not possible, generate a new one
                 i--;
             }
         }
@@ -124,22 +112,21 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * in the shuffle method
      * @param direction Represents a randomly generated move
      */
-
     public void move(int direction) {
         switch (direction) {
-        case UP:
+        case Direction.UP:
             swap(zeroRow, zeroColumn, zeroRow - 1, zeroColumn);
             zeroRow--;
             break;
-        case DOWN:
+        case Direction.DOWN:
             swap(zeroRow, zeroColumn, zeroRow + 1, zeroColumn);
             zeroRow++;
             break;
-        case LEFT:
+        case Direction.LEFT:
             swap(zeroRow, zeroColumn, zeroRow, zeroColumn - 1);
             zeroColumn--;
             break;
-        case RIGHT:
+        case Direction.RIGHT:
             swap(zeroRow, zeroColumn, zeroRow, zeroColumn + 1);
             zeroColumn++;
             break;
@@ -153,23 +140,16 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * @param column The column coordinate for the tile
      * @return Returns the value of the tile
      */
-
     public int getType(int row, int column) {
         return board[row][column];
     }
 
-    /**
-     * @return Returns the row where the zero is located
-     */
-
+    /** @return Returns the row where the zero is located */
     public int getZeroRow() {
         return zeroRow;
     }
 
-    /**
-     * @return Returns the column where the zero is located
-     */
-
+    /** @return Returns the column where the zero is located */
     public int getZeroColumn() {
         return zeroColumn;
     }
@@ -192,7 +172,6 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
      * @param column
      * @param type
      */
-
     public void update(int row, int column, int type) {
         board[row][column] = type;
     }
@@ -200,6 +179,7 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
     /**
      * Returns the number of blocks out of place.
      * Note that we do not count the blank tile when computing the Hamming priority.
+     * @return Hamming distance
      */
     public int hamming() {
         int hamming = 0;
@@ -218,9 +198,9 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
     /**
      * Returns sum of Manhattan distances between blocks and goals.
      * Note that we do not count the blank tile when computing the Manhattan priority.
+     * @return Manhattan distance
      */
     public int manhattan() {
-        String string = "";
         int manhattan = 0;
          for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
@@ -230,16 +210,14 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
                     int column = (board[i][j] - 1) % 3;
                     manhattan += Math.abs(i - row) + Math.abs(j - column);
                     int diff = Math.abs(i - row) + Math.abs(j - column);
-                    string += board[i][j] + ": " + diff + "\n";
                 }
             }
         }
-         // return string;
          return manhattan;
     }
 
     /**
-     *
+     * Used by the neighbouring function to create a clone of this object
      * @return A copy of this object
      */
     @Override
@@ -256,18 +234,16 @@ public class RandomPermutation implements Cloneable, Comparable<RandomPermutatio
     }
 
     /**
-     * * Compares this object with the specified object for order.
+     * Compares this object with the specified object for order, used for AI solver.
      * @param other The other object to be compared
-     * @return A negative integer, zero, or a positive integer if this object is less than, equal to, or greater than the specified object
+     * @return A negative integer, zero, or a positive integer if this object is less than, equal to, or greater
      */
     @Override
     public int compareTo(RandomPermutation other) {
         return Integer.compare(this.hamming(), other.hamming());
     }
 
-    /**
-     * @return An iterable of all neighbouring board position
-     */
+    /** @return An iterable of all neighbouring board position */
     public Iterable<RandomPermutation> neighbours() {
         PriorityQueue<RandomPermutation> neighbours = new PriorityQueue<>();
         RandomPermutation neighbour;

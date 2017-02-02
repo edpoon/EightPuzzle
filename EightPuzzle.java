@@ -8,14 +8,9 @@ import javax.swing.*;
  * This is the main window of the application. A <b>Board</b> object is placed
  * in the center of the frame. The reset button is placed at the bottom.
  *
- * <a href=
- * "http://developer.apple.com/library/safari/#samplecode/Puzzler/Introduction/Intro.html%23//apple_ref/doc/uid/DTS10004409"
- * >Based on Puzzler by Apple</a>.
- *
  * @author Edward Poon, University of Ottawa
  * @author Marcel Turcotte, University of Ottawa
  */
-
 public class EightPuzzle extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
@@ -24,13 +19,11 @@ public class EightPuzzle extends JFrame implements ActionListener {
      * Keeps a reference to the object <b>board</b> in order to call the method
      * reset whenever the user clicks the reset button.
      */
-
     private Board board;
 
     /**
      * Creates the layout of the application.
      */
-
     public EightPuzzle() {
         super("Eight Puzzle");
 
@@ -69,7 +62,6 @@ public class EightPuzzle extends JFrame implements ActionListener {
      *
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
-
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Solve")) {
             board.setAllowsClicks(false);
@@ -81,7 +73,7 @@ public class EightPuzzle extends JFrame implements ActionListener {
             Solver solver = new Solver(board.getPermutation());
 
             stop = System.currentTimeMillis();
-            System.out.printf("Solved in %d moves with runtime: %d ms.", solver.moves(), stop - start);
+            System.out.printf("Solved in %d moves with runtime: %d ms. %n", solver.moves(), stop - start);
 
             // half a second
             Timer timer = new Timer(500, null);
@@ -94,7 +86,7 @@ public class EightPuzzle extends JFrame implements ActionListener {
                         int col = position.getZeroColumn();
                         // don't allow the user to click when the solver is working
                         board.setAllowsClicks(true);
-                        board.board[row][col].doClick();
+                        board.clickCell(row, col);
                         board.setAllowsClicks(false);
                     } else {
                         timer.stop();
@@ -115,10 +107,8 @@ public class EightPuzzle extends JFrame implements ActionListener {
      * Java programs start by executing the main method. Here, this main method
      * creates the main window of the application.
      *
-     * @param args
-     *            the command line arguments
+     * @param args the command line arguments
      */
-
     public static void main(String[] args) {
         new EightPuzzle();
     }
