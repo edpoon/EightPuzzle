@@ -43,4 +43,9 @@ Temporary Items
 .apdisk
 
 # Ignore class files
-.class
+*.class
+
+# =========================
+# IntelliJ
+# =========================
+
