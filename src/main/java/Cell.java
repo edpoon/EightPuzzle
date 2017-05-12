@@ -103,7 +103,7 @@ public class Cell extends JButton {
 
         if (icons[id] == null) {
             String strId = Integer.toString(id);
-            icons[id] = new ImageIcon("src/data/img-0" + strId + ".png");
+            icons[id] = new ImageIcon("src/main/resources/img-0" + strId + ".png");
         }
         return icons[id];
     }
